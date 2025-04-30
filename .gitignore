@@ -1,0 +1,35 @@
+# Node, Flutter, and Dart
+**/build/
+.dart_tool/
+.flutter-plugins
+.packages
+.pub-cache/
+pubspec.lock
+
+# Go
+bin/
+*.exe
+*.out
+*.test
+vendor/
+coverage.out
+
+# Environment & Secrets
+.env
+.env.*
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+

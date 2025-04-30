@@ -1,0 +1,33 @@
+# Common
+.git
+.gitignore
+README.md
+LICENSE
+Dockerfile*
+.dockerignore
+
+# IDE
+.vscode/
+.idea/
+
+# Env and Secrets
+*.env
+.env.*
+
+# Flutter
+build/
+.pub-cache/
+.dart_tool/
+packages
+flutter-plugins
+flutter-plugins-dependencies
+
+# Go
+bin/
+vendor/
+*.test
+coverage.out
+
+# Logs
+*.log
+
