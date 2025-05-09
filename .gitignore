@@ -5,6 +5,15 @@
 .packages
 .pub-cache/
 pubspec.lock
+android/
+ios/
+linux/
+macos/
+test/
+web/
+windows/
+*.iml
+analysis_options.yaml
 
 # Go
 bin/
@@ -13,6 +22,8 @@ bin/
 *.test
 vendor/
 coverage.out
+goose/
+goose
 
 # Environment & Secrets
 .env
