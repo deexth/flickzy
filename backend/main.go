@@ -4,6 +4,7 @@ import (
 	"flickzy/db"
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -12,6 +13,11 @@ import (
 // var DBQuery db
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	HandleStart()
 
 	server := gin.Default()
 
@@ -20,13 +26,14 @@ func main() {
 }
 
 func HandleStart() {
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
 	dbURL := os.Getenv("DB_URL")
 	if dbURL == "" {
 		log.Fatal("DB url is not set")
+	}
+
+	_, err := strconv.ParseBool(dbURL)
+	if err != nil {
+		log.Fatal("Invalid DB url:", err)
 	}
 
 	pool, err := db.DatabasePool(dbURL)
