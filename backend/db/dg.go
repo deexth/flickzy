@@ -2,7 +2,7 @@ package db
 
 import (
 	"context"
-	"flickzy/db/internal/database"
+	"flickzy/db/database"
 	"fmt"
 	"time"
 

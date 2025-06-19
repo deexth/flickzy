@@ -2,8 +2,10 @@
 CREATE TABLE users(
     id UUID NOT NULL PRIMARY KEY,
     email TEXT NOT NULL UNIQUE,
-    password TEXT,
-    token VARCHAR(64) UNIQUE NOT NULL
+    username TEXT NOT NULL UNIQUE,
+    api_token VARCHAR(64) UNIQUE NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL
 );
 
 -- +goose down

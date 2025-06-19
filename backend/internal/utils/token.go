@@ -3,40 +3,30 @@ package utils
 import (
 	"fmt"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
 
-type jwtMaker struct {
-	secretKey []byte
-}
-
-// func NewJWTMaker(secretKey string) jwtMaker {
-// 	return jwtMaker{
-// 		secretKey: secretKey,
-// 	}
-// }
-
 type UserClaims struct {
-	Iss    string
-	Sub    string
-	Sub_id int64
-	Exp    jwt.NumericDate
-	Iat    jwt.NumericDate
+	Email string `json:"sub"`
+	ID    string `json:"sub_id"`
+	jwt.RegisteredClaims
 }
 
-func (maker *jwtMaker) GenerateToken(email string, userId int64) (string, error) {
-	tClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"iss":    "flickzy",
-		"sub":    email,
-		"sub_id": userId,
-		"exp":    jwt.NewNumericDate(time.Now().Add(time.Hour)),
-		"iat":    jwt.NewNumericDate(time.Now()),
-	})
+func GenerateToken(email string, userId string, secretKey []byte, lifetime int64) (string, error) {
+	claims := UserClaims{
+		Email: email,
+		ID:    userId,
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    "flickzy",
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * time.Duration(lifetime))),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	tokenStr, err := tClaims.SignedString(maker.secretKey)
+	tokenStr, err := token.SignedString(secretKey)
 	if err != nil {
 		return "", fmt.Errorf("Issue signing token: %v", err)
 	}
@@ -44,55 +34,36 @@ func (maker *jwtMaker) GenerateToken(email string, userId int64) (string, error)
 	return tokenStr, nil
 }
 
-func (maker *jwtMaker) VerifyToken(token string) (UserClaims, error) {
-	parsedToken, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
+func VerifyToken(tokenStr string, secretKey []byte) (*UserClaims, error) {
+	token, err := jwt.ParseWithClaims(tokenStr, &UserClaims{}, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Invalid token signing method")
+			return nil, fmt.Errorf("Unexpected signing method")
 		}
-		return maker.secretKey, nil
+		return secretKey, nil
 	})
 	if err != nil {
-		return UserClaims{}, fmt.Errorf("Invalid credentials, %v", err)
+		return nil, fmt.Errorf("Invalid token: %w", err)
 	}
 
-	if !parsedToken.Valid {
-		return UserClaims{}, fmt.Errorf("Invalid token")
+	if !token.Valid {
+		return nil, fmt.Errorf("Invalid token")
 	}
 
-	claims, ok := parsedToken.Claims.(jwt.MapClaims)
+	claims, ok := token.Claims.(*UserClaims)
 	if !ok {
-		return UserClaims{}, fmt.Errorf("Unable to parse claims")
+		return nil, fmt.Errorf("Invalid token claims or token expired")
 	}
 
-	if exp, ok := claims["exp"].(float64); ok {
-		if time.Unix(int64(exp), 0).Before(time.Now()) {
-			return UserClaims{}, fmt.Errorf("token has expired")
-		}
-	}
-
-	userClaims := UserClaims{
-		Iss:    claims["iss"].(string),
-		Sub:    claims["sub"].(string),
-		Sub_id: int64(claims["sub_id"].(float64)),
-		Exp:    jwt.NumericDate{Time: time.Unix(int64(claims["exp"].(float64)), 0)},
-		Iat:    jwt.NumericDate{Time: time.Unix(int64(claims["iat"].(float64)), 0)},
-	}
-
-	return userClaims, nil
+	return claims, nil
 }
 
-func NewSecret() (*jwtMaker, error) {
+func getSecret() ([]byte, error) {
 	jwtSecr := os.Getenv("JWT_SECRET")
 	if jwtSecr == "" {
 		return nil, fmt.Errorf("No secret key found")
 	}
 
-	_, err := strconv.ParseBool(jwtSecr)
-	if err != nil {
-		return nil, fmt.Errorf("Invalid secret key format: %v", err)
-	}
-
-	return &jwtMaker{secretKey: []byte(jwtSecr)}, nil
+	return []byte(jwtSecr), nil
 }
 
 func getRole(email string) string {

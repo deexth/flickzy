@@ -7,5 +7,5 @@ sql:
       uri: ${DB_URL}
     gen:
       go:
-        out: "internal/database"
+        out: "database"
         sql_package: "pgx/v5"
