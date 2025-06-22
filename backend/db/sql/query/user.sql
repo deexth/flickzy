@@ -24,10 +24,13 @@ SELECT id, email, created_at, updated_at, api_token FROM users WHERE email=$1;
 SELECT id, email, created_at, updated_at, api_token FROM users WHERE api_token=$1;
 
 -- name: UpdateApiToken :execresult
-UPDATE users SET api_token = $1, updated_at = $2 WHERE email = $3;
+UPDATE users SET api_token = $1 WHERE email = $2;
 
 -- name: UpdateUserEmail :execresult
 UPDATE users SET email = $1, updated_at = $2 WHERE email = $3;
 
 -- name: DeleteUser :execresult
 DELETE FROM users WHERE id = $1 AND username=$2;
+
+-- name: DeleteUserOTP :execresult
+DELETE FROM userotp WHERE email = $1 AND otp=$2;

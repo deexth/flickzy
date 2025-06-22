@@ -7,62 +7,78 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func register(ctx *gin.Context) {
-	// Change this, return only email and instead return the full user in verifyOTP
-	// This will just check email
+func login_register(ctx *gin.Context) {
 	reqCtx := ctx.Request.Context()
 
-	var userInput user.UserIn
-	if err := ctx.ShouldBindJSON(userInput); err != nil {
+	var user user.UserIn
+	if err := ctx.ShouldBindJSON(&user); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"Error": "Something went wrong",
+			"issue": err.Error(),
 		})
 		return
 	}
 
-	user, err := userInput.NewUser(reqCtx)
+	if err := user.CreateOTP(reqCtx); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"Error": "Internal server error",
+			"issue": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, "OTP sent")
+}
+
+func verifyOTP(ctx *gin.Context) {
+	reqCtx := ctx.Request.Context()
+
+	var user user.UserIn
+	if err := ctx.ShouldBindJSON(&user); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"Error": "Something went wrong",
+			"issue": err.Error(),
+		})
+		return
+	}
+
+	if err := user.VerifyOTP(reqCtx); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"Error": "Invalid OTP",
+			"issue": err.Error(),
+		})
+		return
+	}
+
+	id, err := user.GetUser(reqCtx)
+	if err != nil {
+		user, errN := user.NewUser(reqCtx)
+		if errN != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"Error": "Internal server error",
+				"issue": errN.Error(),
+			})
+			return
+		}
+
+		ctx.JSON(http.StatusCreated, gin.H{
+			"Status": "Successfully registered",
+			"User":   user,
+		})
+		return
+	}
+
+	LoggedInUser, err := user.UpdateTokens(reqCtx, id)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"Error": "Internal server error",
-		})
-		return
-	}
-
-	ctx.JSON(http.StatusCreated, gin.H{
-		"User": user,
-	})
-}
-
-func login(ctx *gin.Context) {
-	// Only check email and to the rest in VerifyOTP
-	reqCtx := ctx.Request.Context()
-
-	var userInput user.UserIn
-	if err := ctx.ShouldBindJSON(userInput); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"Error": "Something went wrong",
-		})
-		return
-	}
-
-	user, err := userInput.CheckUserEmail(reqCtx)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"Error": "Something went wrong",
+			"issue": err.Error(),
 		})
 		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"Status": "Login successful",
-		"User":   user,
+		"Status": "Loged in successfully",
+		"Token":  LoggedInUser.APItoken,
 	})
-}
-
-func deleteAccount(ctx *gin.Context) {}
-func updateEmail(ctx *gin.Context)   {}
-func logout(ctx *gin.Context)        {}
-func verifyOTP(ctx *gin.Context) {
-	// Return full user
-	// Generate the token and other crucial settings
 }

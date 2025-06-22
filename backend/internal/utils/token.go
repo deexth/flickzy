@@ -42,7 +42,7 @@ func VerifyToken(tokenStr string, secretKey []byte) (*UserClaims, error) {
 		return secretKey, nil
 	})
 	if err != nil {
-		return nil, fmt.Errorf("Invalid token: %w", err)
+		return nil, fmt.Errorf("Invalid token: %v", err)
 	}
 
 	if !token.Valid {

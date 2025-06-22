@@ -64,6 +64,19 @@ func (q *Queries) DeleteUser(ctx context.Context, arg DeleteUserParams) (pgconn.
 	return q.db.Exec(ctx, deleteUser, arg.ID, arg.Username)
 }
 
+const deleteUserOTP = `-- name: DeleteUserOTP :execresult
+DELETE FROM userotp WHERE email = $1 AND otp=$2
+`
+
+type DeleteUserOTPParams struct {
+	Email string
+	Otp   int32
+}
+
+func (q *Queries) DeleteUserOTP(ctx context.Context, arg DeleteUserOTPParams) (pgconn.CommandTag, error) {
+	return q.db.Exec(ctx, deleteUserOTP, arg.Email, arg.Otp)
+}
+
 const getUserByEmail = `-- name: GetUserByEmail :one
 SELECT id, email, created_at, updated_at, api_token FROM users WHERE email=$1
 `
@@ -169,17 +182,16 @@ func (q *Queries) HandleOTP(ctx context.Context, arg HandleOTPParams) (Userotp, 
 }
 
 const updateApiToken = `-- name: UpdateApiToken :execresult
-UPDATE users SET api_token = $1, updated_at = $2 WHERE email = $3
+UPDATE users SET api_token = $1 WHERE email = $2
 `
 
 type UpdateApiTokenParams struct {
-	ApiToken  string
-	UpdatedAt pgtype.Timestamptz
-	Email     string
+	ApiToken string
+	Email    string
 }
 
 func (q *Queries) UpdateApiToken(ctx context.Context, arg UpdateApiTokenParams) (pgconn.CommandTag, error) {
-	return q.db.Exec(ctx, updateApiToken, arg.ApiToken, arg.UpdatedAt, arg.Email)
+	return q.db.Exec(ctx, updateApiToken, arg.ApiToken, arg.Email)
 }
 
 const updateUserEmail = `-- name: UpdateUserEmail :execresult

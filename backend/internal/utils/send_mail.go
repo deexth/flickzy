@@ -1,75 +1,66 @@
 package utils
 
-import (
-	"context"
-	"fmt"
-	"os"
-	"time"
+// func SendOTP(ctx context.Context, email string, otp string) error {
+// 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+// 	defer cancel()
 
-	"github.com/mailersend/mailersend-go"
-)
+// 	APIKey, err := getSecretMailSend()
+// 	if err != nil {
+// 		return err
+// 	}
 
-func SendOTP(ctx context.Context, email string, otp string) error {
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-	defer cancel()
+// 	ms := mailersend.NewMailersend(APIKey)
 
-	APIKey, err := getSecretMailSend()
-	if err != nil {
-		return err
-	}
+// 	subject := "Your OTP Code"
 
-	ms := mailersend.NewMailersend(APIKey)
+// 	from := mailersend.From{
+// 		Name:  "Flickzy",
+// 		Email: "test-65qngkd0r63lwr12.mlsender.net",
+// 	}
 
-	subject := "Your OTP Code"
+// 	recipients := []mailersend.Recipient{
+// 		{
+// 			Name:  "Recipient",
+// 			Email: email,
+// 		},
+// 	}
 
-	from := mailersend.From{
-		Name:  "Flickzy",
-		Email: "info@flickzy.com",
-	}
+// 	personalization := []mailersend.Personalization{
+// 		{
+// 			Email: email,
+// 			Data: map[string]interface{}{
+// 				"YEAR":     "2025",
+// 				"OTP_CODE": otp,
+// 			},
+// 		},
+// 	}
 
-	recipients := []mailersend.Recipient{
-		{
-			// Name:  "Recipient",
-			Email: email,
-		},
-	}
+// 	// tags := []string{"foo", "bar"}
 
-	personalization := []mailersend.Personalization{
-		{
-			Email: email,
-			Data: map[string]interface{}{
-				"YEAR":     "2025",
-				"OTP_CODE": otp,
-			},
-		},
-	}
+// 	message := ms.Email.NewMessage()
 
-	tags := []string{"foo", "bar"}
+// 	message.SetFrom(from)
+// 	message.SetRecipients(recipients)
+// 	message.SetSubject(subject)
+// 	message.SetTemplateID("x2p0347yq094zdrn")
+// 	message.SetPersonalization(personalization)
 
-	message := ms.Email.NewMessage()
+// 	// message.SetTags(tags)
 
-	message.SetFrom(from)
-	message.SetRecipients(recipients)
-	message.SetSubject(subject)
-	message.SetTemplateID("x2p0347yq094zdrn")
-	message.SetPersonalization(personalization)
+// 	res, err := ms.Email.Send(ctx, message)
+// 	if err != nil {
+// 		return fmt.Errorf("Issue sending out otp mail: %v", err)
+// 	}
 
-	message.SetTags(tags)
+// 	fmt.Printf(res.Header.Get("X-Message-Id"))
+// 	return nil
+// }
 
-	_, err = ms.Email.Send(ctx, message)
-	if err != nil {
-		return fmt.Errorf("Issue sending out otp mail: %w", err)
-	}
+// func getSecretMailSend() (string, error) {
+// 	maisendApi := os.Getenv("MAIL_SEND_API")
+// 	if maisendApi == "" {
+// 		return "", fmt.Errorf("No API found for mail send")
+// 	}
 
-	// fmt.Printf(res.Header.Get("X-Message-Id"))
-	return nil
-}
-
-func getSecretMailSend() (string, error) {
-	maisendApi := os.Getenv("MAIL_SEND_API")
-	if maisendApi == "" {
-		return "", fmt.Errorf("No API found for mail send")
-	}
-
-	return maisendApi, nil
-}
+// 	return maisendApi, nil
+// }

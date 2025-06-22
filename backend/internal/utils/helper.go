@@ -22,7 +22,7 @@ func GetTokens(email string, id string) (Token, error) {
 
 	accToken, err := GenerateToken(email, id, secretKey, 24)
 	if err != nil {
-		return Token{}, fmt.Errorf("Issue creating access token: %w", err)
+		return Token{}, fmt.Errorf("Issue creating access token: %v", err)
 	}
 
 	return Token{
