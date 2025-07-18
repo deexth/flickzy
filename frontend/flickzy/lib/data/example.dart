@@ -1,0 +1,88 @@
+import 'package:flickzy/data/models.dart';
+
+final List<Demographics> demoSuggestions = [
+  Demographics(
+    fullName: "Alice Johnson",
+    userName: "alicej",
+    bioText: "Movie buff and sports fan.",
+    genres: Genres.sports,
+    avatarUrl: "https://i.pravatar.cc/150",
+  ),
+  Demographics(
+    fullName: "Bob Smith",
+    userName: "bob_smith",
+    bioText: "Thriller and crime series lover.",
+    genres: Genres.thriller,
+    avatarUrl: "https://i.pravatar.cc/150",
+  ),
+  Demographics(
+    fullName: "Cathy Lee",
+    userName: "cathylee",
+    bioText: "Romance and drama enthusiast.",
+    genres: Genres.romance,
+    avatarUrl: "https://i.pravatar.cc/150",
+  ),
+  Demographics(
+    fullName: "David Kim",
+    userName: "davidk",
+    bioText: "Sci-fi and fantasy explorer.",
+    genres: Genres.sciFi,
+    avatarUrl: "https://i.pravatar.cc/150",
+  ),
+  Demographics(
+    fullName: "Ella Brown",
+    userName: "ella_b",
+    bioText: "Animation and adventure for life.",
+    genres: Genres.animation,
+    avatarUrl: "https://i.pravatar.cc/150",
+  ),
+  Demographics(
+    fullName: "Frank Green",
+    userName: "frankg",
+    bioText: "Comedy and musical addict.",
+    genres: Genres.comedy,
+    avatarUrl: "https://i.pravatar.cc/150",
+  ),
+  Demographics(
+    fullName: "Grace Park",
+    userName: "gracep",
+    bioText: "Documentary and horror fan.",
+    genres: Genres.documentary,
+    avatarUrl: "https://i.pravatar.cc/150",
+  ),
+  Demographics(
+    fullName: "Henry Adams",
+    userName: "henryadams",
+    bioText: "Action and adventure seeker.",
+    genres: Genres.action,
+    avatarUrl: "https://i.pravatar.cc/150",
+  ),
+  Demographics(
+    fullName: "Ivy Chen",
+    userName: "ivychen",
+    bioText: "Mystic and fantasy stories.",
+    genres: Genres.mystic,
+    avatarUrl: "https://i.pravatar.cc/150",
+  ),
+  Demographics(
+    fullName: "Jack Wilson",
+    userName: "jackw",
+    bioText: "Drama and horror binge-watcher.",
+    genres: Genres.drama,
+    avatarUrl: "https://i.pravatar.cc/150",
+  ),
+  Demographics(
+    fullName: "Kara Young",
+    userName: "karay",
+    bioText: "Loves all things musical and animation.",
+    genres: Genres.musical,
+    avatarUrl: "https://i.pravatar.cc/150",
+  ),
+  Demographics(
+    fullName: "Leo Turner",
+    userName: "leoturner",
+    bioText: "Adventure and sci-fi explorer.",
+    genres: Genres.adventure,
+    avatarUrl: "https://i.pravatar.cc/150",
+  ),
+];

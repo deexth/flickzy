@@ -13,6 +13,7 @@ Dockerfile*
 # Env and Secrets
 *.env
 .env.*
+.env
 
 # Flutter
 build/
@@ -34,3 +35,8 @@ goose
 # Logs
 *.log
 
+# Python
+__pycache__
+
+docker-compose.prod.yml
+Dockerfile

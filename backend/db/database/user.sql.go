@@ -103,7 +103,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (GetUserByEm
 }
 
 const getUserByOTP = `-- name: GetUserByOTP :one
-SELECT id, email, otp, expires_at FROM userotp WHERE email=$1 AND otp=$2
+SELECT email, otp, expires_at FROM userotp WHERE email=$1 AND otp=$2
 `
 
 type GetUserByOTPParams struct {
@@ -114,12 +114,7 @@ type GetUserByOTPParams struct {
 func (q *Queries) GetUserByOTP(ctx context.Context, arg GetUserByOTPParams) (Userotp, error) {
 	row := q.db.QueryRow(ctx, getUserByOTP, arg.Email, arg.Otp)
 	var i Userotp
-	err := row.Scan(
-		&i.ID,
-		&i.Email,
-		&i.Otp,
-		&i.ExpiresAt,
-	)
+	err := row.Scan(&i.Email, &i.Otp, &i.ExpiresAt)
 	return i, err
 }
 
@@ -150,34 +145,23 @@ func (q *Queries) GetUserByToken(ctx context.Context, apiToken string) (GetUserB
 
 const handleOTP = `-- name: HandleOTP :one
 INSERT INTO userotp(
-    id, email, expires_at, otp
+    email, expires_at, otp
 )VALUES(
-    $1, $2, $3, $4
+    $1, $2, $3
 )
-RETURNING id, email, otp, expires_at
+RETURNING email, otp, expires_at
 `
 
 type HandleOTPParams struct {
-	ID        pgtype.UUID
 	Email     string
 	ExpiresAt pgtype.Timestamptz
 	Otp       int32
 }
 
 func (q *Queries) HandleOTP(ctx context.Context, arg HandleOTPParams) (Userotp, error) {
-	row := q.db.QueryRow(ctx, handleOTP,
-		arg.ID,
-		arg.Email,
-		arg.ExpiresAt,
-		arg.Otp,
-	)
+	row := q.db.QueryRow(ctx, handleOTP, arg.Email, arg.ExpiresAt, arg.Otp)
 	var i Userotp
-	err := row.Scan(
-		&i.ID,
-		&i.Email,
-		&i.Otp,
-		&i.ExpiresAt,
-	)
+	err := row.Scan(&i.Email, &i.Otp, &i.ExpiresAt)
 	return i, err
 }
 

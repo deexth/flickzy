@@ -8,9 +8,9 @@ RETURNING *;
 
 -- name: HandleOTP :one
 INSERT INTO userotp(
-    id, email, expires_at, otp
+    email, expires_at, otp
 )VALUES(
-    $1, $2, $3, $4
+    $1, $2, $3
 )
 RETURNING *;
 

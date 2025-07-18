@@ -1,7 +1,9 @@
 package auth
 
 import (
+	"errors"
 	"flickzy/internal/user"
+	"flickzy/internal/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -9,6 +11,16 @@ import (
 
 func login_register(ctx *gin.Context) {
 	reqCtx := ctx.Request.Context()
+
+	ip := ctx.ClientIP()
+	if ip == "" {
+		ctx.AbortWithError(http.StatusMethodNotAllowed, errors.New("Missing Ip"))
+		return
+	}
+	if err := utils.Ratelimit(ctx, ip); err != nil {
+		ctx.JSON(http.StatusTooManyRequests, gin.H{"Error": "You hit your limit"})
+		return
+	}
 
 	var user user.UserIn
 	if err := ctx.ShouldBindJSON(&user); err != nil {

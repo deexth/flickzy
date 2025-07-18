@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"strings"
@@ -9,7 +10,10 @@ import (
 	"github.com/resend/resend-go/v2"
 )
 
-func SendOTP(email string, otp string) error {
+func SendOTP(ctx context.Context, email string, otp string) error {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
 	apiKey, err := getSecretMailSend()
 	if err != nil {
 		return err
@@ -27,7 +31,7 @@ func SendOTP(email string, otp string) error {
 		Html:    htmlBody,
 	}
 
-	_, err = client.Emails.Send(params)
+	_, err = client.Emails.SendWithContext(ctx, params)
 	if err != nil {
 		return err
 	}

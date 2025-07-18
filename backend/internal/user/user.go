@@ -64,7 +64,6 @@ func (u *UserIn) NewUser(ctx context.Context) (UserOut, error) {
 }
 
 func (u *UserIn) CreateOTP(ctx context.Context) error {
-	id := uuid.New()
 	otp, err := utils.GenerateOTP()
 	if err != nil {
 		return fmt.Errorf("Issue generating otp: %v", err)
@@ -76,7 +75,6 @@ func (u *UserIn) CreateOTP(ctx context.Context) error {
 	}
 
 	params := database.HandleOTPParams{
-		ID:        pgtype.UUID{Bytes: id, Valid: true},
 		Email:     u.Email,
 		ExpiresAt: pgtype.Timestamptz{Time: time.Now().Add(10 * time.Minute), Valid: true},
 		Otp:       int32(otpInt),
@@ -92,7 +90,7 @@ func (u *UserIn) CreateOTP(ctx context.Context) error {
 		Otp:   int32(otpInt),
 	}
 
-	if err := utils.SendOTP(u.Email, otp); err != nil {
+	if err := utils.SendOTP(ctx, u.Email, otp); err != nil {
 		db.DBQuery.DeleteUserOTP(ctx, delParams)
 
 		return err
@@ -164,4 +162,8 @@ func (u *UserIn) UpdateTokens(ctx context.Context, id string) (UserOut, error) {
 	}
 
 	return user, nil
+}
+
+func GetUserByToken(ctx context.Context, accessKey string) (*UserOut, error) {
+	return nil, nil
 }

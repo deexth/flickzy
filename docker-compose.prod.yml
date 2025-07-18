@@ -1,0 +1,51 @@
+services:
+  backend:
+    container_name: flickzy-api
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: flickzy
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - go-flickzy
+    # environment:
+    #   - name=value
+
+  db:
+    image: postgres:17.5-alpine3.22
+    container_name: flickzy-db
+    ports:
+      - "5431:5432"
+    # environment:
+    #   - name=value
+    volumes:
+      - flickzy-db-data:/var/lib/postgresql/data
+    networks:
+      - go-flickzy
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d flickzy"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  redis:
+    image: redis:8.0.2-alpine
+    container_name: flickzy-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - go-flickzy
+
+networks:
+  go-flickzy:
+    driver: bridge
+
+volumes:
+  flickzy-db-data:

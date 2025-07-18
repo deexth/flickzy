@@ -1,30 +1,28 @@
-# Start from the official Golang image
-FROM golang:1.24-alpine AS builder
+# Stage 1: Build the Go binary
+FROM golang:1.24-alpine3.22 AS builder
 
 WORKDIR /app
 
-# Copy go mod and sum files
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy the source code
 COPY . .
 
-# Build the Go app
-RUN go build -o flickzy
+RUN go build -o app .
 
-# Use a minimal image for running
-FROM alpine:3.20
+# Stage 2: Minimal runtime image
+FROM alpine:3.22
+
+RUN adduser -D appuser
 
 WORKDIR /app
 
-# Copy the built binary from builder
-COPY --from=builder /app/flickzy .
-# Copy .env file if needed
-COPY .env .
+COPY --from=builder /app/app .
 
-# Expose the port (change if needed)
+RUN chown -R appuser:appuser /app
+
+USER appuser
+
 EXPOSE 8080
 
-# Run the binary
-CMD ["./flickzy"]
+CMD ["./app"]

@@ -4,7 +4,7 @@ sql:
     queries: "sql/query"
     schema: "sql/schema"
     database:
-      uri: ${DB_URL}
+      uri: ${DB_URL_SQLC}
     gen:
       go:
         out: "database"

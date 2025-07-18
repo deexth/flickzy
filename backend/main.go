@@ -1,26 +1,45 @@
 package main
 
 import (
+	"context"
 	"flickzy/db"
 	"flickzy/internal/auth"
+	"flickzy/internal/utils"
 	"log"
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 )
 
 // var DBQuery db
 
 func main() {
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error loading .env file")
+	// if err := godotenv.Load(); err != nil {
+	// 	log.Fatal("Error loading .env file")
+	// }
+
+	portAddress := os.Getenv("PORT_ADDRESS")
+	if portAddress == "" {
+		log.Fatal("port address is not set")
 	}
 
 	dbURL := os.Getenv("DB_URL")
 	if dbURL == "" {
 		log.Fatal("DB url is not set")
 	}
+
+	redisAddr := os.Getenv("REDIS_ADDR")
+	if redisAddr == "" {
+		log.Fatal("redis address is not set")
+	}
+
+	utils.InitRedis(redisAddr)
+	ctx := context.Background()
+	_, err := utils.Rdb.Ping(ctx).Result()
+	if err != nil {
+		log.Fatal("Issue starting redis,", err)
+	}
+	// ctx.Done()
 
 	pool, err := db.DatabasePool(dbURL)
 	if err != nil {
@@ -33,7 +52,9 @@ func main() {
 	server := gin.Default()
 	auth.RegisteredRoutes(server)
 
-	server.Run(":8080")
+	log.Println("Starting the server on port: ", portAddress)
+
+	server.Run(":" + portAddress)
 
 }
 

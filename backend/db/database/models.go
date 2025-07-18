@@ -8,6 +8,29 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Comment struct {
+	ID          pgtype.UUID
+	CreatedAt   pgtype.Timestamptz
+	PublishedAt pgtype.Timestamptz
+	Description pgtype.Text
+	Blob        pgtype.Text
+	Likes       pgtype.Int4
+	PostID      pgtype.UUID
+	UserID      pgtype.UUID
+}
+
+type Post struct {
+	ID          pgtype.UUID
+	Description pgtype.Text
+	CreatedAt   pgtype.Timestamptz
+	Likes       pgtype.Int4
+	Sharecount  pgtype.Int4
+	Repost      pgtype.Int4
+	Blob        pgtype.Text
+	UserID      pgtype.UUID
+	PublishedAt pgtype.Timestamptz
+}
+
 type User struct {
 	ID        pgtype.UUID
 	Email     string
@@ -18,7 +41,6 @@ type User struct {
 }
 
 type Userotp struct {
-	ID        pgtype.UUID
 	Email     string
 	Otp       int32
 	ExpiresAt pgtype.Timestamptz
